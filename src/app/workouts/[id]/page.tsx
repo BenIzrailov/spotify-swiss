@@ -11,12 +11,15 @@ async function getWorkout(id: string) {
 }
 
 export default async function WorkoutPage({ params }: { params: { id: string } }) {
-    const workout = params.id !== "new" ? await getWorkout(params.id) : null;
+    const workout =
+        params.id !== "new" && ObjectId.isValid(params.id)
+            ? await getWorkout(params.id)
+            : null;
 
     return (
         <div className="p-6">
             {params.id === "new" ? (
-                <Editor workout={null} />
+                <Editor workout={null} params={params} />
             ) : (
                 <Viewer workout={workout} />
             )}

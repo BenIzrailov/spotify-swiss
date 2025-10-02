@@ -9,7 +9,12 @@ interface Section {
     intensity: string;
 }
 
-export default function Editor({ workout }: { workout: any }) {
+type EditorProps = {
+    workout: any;
+    params: { id: string };
+};
+
+export default function Editor({workout, params} : EditorProps) {
     const [sections, setSections] = useState<Section[]>(
         workout?.sections ?? [{ name: "", duration: undefined, intensity: "" }]
     );
@@ -28,9 +33,20 @@ export default function Editor({ workout }: { workout: any }) {
         setSections([...sections, { name: "", duration: undefined, intensity: "" }]);
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         console.log("Saving workout:", { ...workout, sections });
-        // 🔗 Here you'd call your API route to save (insertOne or updateOne)
+
+        const res = await fetch(`/api/workouts/${params.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sections }),
+        });
+
+        if (res.ok) {
+            alert("Workout updated!");
+        } else {
+            alert("Failed to save workout");
+        }
     };
 
     return (
