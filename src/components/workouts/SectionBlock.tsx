@@ -11,10 +11,11 @@ interface Section {
 interface SectionBlockProps {
     section: Section;
     onChange: (updated: Section) => void;
+    disabled?: boolean;
     onRemove?: () => void;
 }
 
-export default function SectionBlock({ section, onChange, onRemove }: SectionBlockProps) {
+export default function SectionBlock({ section, onChange,disabled, onRemove }: SectionBlockProps) {
     const [local, setLocal] = useState(section);
 
     const update = (field: keyof Section, value: any) => {
@@ -23,8 +24,12 @@ export default function SectionBlock({ section, onChange, onRemove }: SectionBlo
         onChange(updated);
     };
 
+    const containerClass = `bg-white border rounded-2xl shadow-sm p-4 mb-4 ${disabled ? "opacity-60 pointer-events-none" : ""}`;
+
+    const inputBase = "w-full p-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100";
+
     return (
-        <div className="bg-white border rounded-2xl shadow-sm p-4 mb-4">
+        <div className={containerClass}>
             <div className="space-y-3">
                 {/* Section Name */}
                 <div>
@@ -35,6 +40,7 @@ export default function SectionBlock({ section, onChange, onRemove }: SectionBlo
                         onChange={(e) => update("name", e.target.value)}
                         placeholder="e.g., Warm-up"
                         className="w-full p-2 border border-gray-300 rounded-lg"
+                        disabled={disabled}
                     />
                 </div>
 
@@ -45,6 +51,7 @@ export default function SectionBlock({ section, onChange, onRemove }: SectionBlo
                         type="number"
                         value={local.duration ?? ""}
                         onChange={(e) => update("duration", parseInt(e.target.value) || 0)}
+                        disabled={disabled}
                         placeholder="300"
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     />
@@ -56,6 +63,7 @@ export default function SectionBlock({ section, onChange, onRemove }: SectionBlo
                     <select
                         value={local.intensity}
                         onChange={(e) => update("intensity", e.target.value)}
+                        disabled={disabled}
                         className="w-full p-2 border border-gray-300 rounded-lg"
                     >
                         <option value="">Select intensity</option>

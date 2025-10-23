@@ -10,7 +10,8 @@ async function getWorkout(id: string) {
     return JSON.parse(JSON.stringify(workout));
 }
 
-export default async function WorkoutPage({ params }: { params: { id: string } }) {
+export default async function WorkoutPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
     const workout =
         params.id !== "new" && ObjectId.isValid(params.id)
             ? await getWorkout(params.id)
@@ -19,7 +20,7 @@ export default async function WorkoutPage({ params }: { params: { id: string } }
     return (
         <div className="p-6">
             {params.id === "new" ? (
-                <Editor workout={null} params={params} />
+                <Editor workout={null} />
             ) : (
                 <Viewer workout={workout} />
             )}

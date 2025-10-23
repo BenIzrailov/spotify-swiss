@@ -12,6 +12,7 @@ interface Section {
 
 export default function Viewer({ workout }: { workout: any }) {
     const [editing, setEditing] = useState(false);
+    const [currentWorkout, setCurrentWorkout] = useState(workout);
 
     if (!workout) return <p>Workout not found</p>;
 
@@ -22,12 +23,13 @@ export default function Viewer({ workout }: { workout: any }) {
                     <h1 className="text-2xl font-bold">{workout.name}</h1>
                     <p className="text-gray-600 mb-4">Type: {workout.type}</p>
 
-                    {workout.sections?.length ? (
-                        workout.sections.map((section: Section, idx: number) => (
+                    {currentWorkout.sections?.length ? (
+                        currentWorkout.sections.map((section: Section, idx: number) => (
                             <SectionBlock
                                 key={idx}
                                 section={section}
-                                onChange={() => {}} // No editing here
+                                onChange={() => {}}
+                                disabled={true}
                             />
                         ))
                     ) : (
@@ -42,7 +44,14 @@ export default function Viewer({ workout }: { workout: any }) {
                     </button>
                 </>
             ) : (
-                <Editor workout={workout} />
+                <Editor
+                    workout={workout}
+                    onSave={(updatedWorkout) => {
+                        console.log("Saving workout", updatedWorkout);
+                        setCurrentWorkout(updatedWorkout);
+                        setEditing(false);
+                    }}
+                />
             )}
         </div>
     );

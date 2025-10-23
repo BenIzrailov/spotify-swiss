@@ -11,10 +11,10 @@ interface Section {
 
 type EditorProps = {
     workout: any;
-    params: { id: string };
+    onSave?: (workout: any) => void;
 };
 
-export default function Editor({workout, params} : EditorProps) {
+export default function Editor({workout, onSave} : EditorProps) {
     const [sections, setSections] = useState<Section[]>(
         workout?.sections ?? [{ name: "", duration: undefined, intensity: "" }]
     );
@@ -35,8 +35,9 @@ export default function Editor({workout, params} : EditorProps) {
 
     const handleSave = async () => {
         console.log("Saving workout:", { ...workout, sections });
+        const updatedWorkout = { ...workout, sections };
 
-        const res = await fetch(`/api/workouts/${params.id}`, {
+        const res = await fetch(`/api/workouts/${workout._id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sections }),
@@ -44,6 +45,7 @@ export default function Editor({workout, params} : EditorProps) {
 
         if (res.ok) {
             alert("Workout updated!");
+            onSave(updatedWorkout);
         } else {
             alert("Failed to save workout");
         }
