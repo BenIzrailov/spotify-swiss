@@ -9,9 +9,16 @@ interface Section {
     intensity: string;
 }
 
+type Workout = {
+    _id?: string;
+    name?: string;
+    type?: string;
+    sections?: Section[];
+};
+
 type EditorProps = {
-    workout: any;
-    onSave?: (workout: any) => void;
+    workout: Workout;
+    onSave?: (workout: Workout) => void;
 };
 
 export default function Editor({workout, onSave} : EditorProps) {
@@ -45,7 +52,9 @@ export default function Editor({workout, onSave} : EditorProps) {
 
         if (res.ok) {
             alert("Workout updated!");
-            onSave(updatedWorkout);
+            if (onSave) {
+                onSave(updatedWorkout);
+            }
         } else {
             alert("Failed to save workout");
         }

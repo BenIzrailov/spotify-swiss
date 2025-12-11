@@ -6,10 +6,6 @@ export default async function WorkoutsListPage() {
     const db = client.db("spotify-swiss");
     const workouts = await db.collection("workouts").find({}).toArray();
 
-    console.log("Fetched workouts:", workouts);
-
-
-
     return (
         <div className="max-w-3xl mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">My Workouts</h1>

@@ -10,11 +10,15 @@ interface SpotifyAccount extends Account {
 const SPOTIFY_SCOPES = [
     "user-read-email",
     "playlist-read-private",
+    "playlist-modify-public",
+    "playlist-modify-private",
     "user-top-read",
 ].join(" ")
 
 
-const authOptions = {
+
+export const authOptions: AuthOptions = {
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         SpotifyProvider({
             clientId: process.env.SPOTIFY_CLIENT_ID!,
@@ -22,6 +26,9 @@ const authOptions = {
             authorization: `https://accounts.spotify.com/authorize?scope=${SPOTIFY_SCOPES}`,
         }),
     ],
+    session: {
+        strategy: "jwt",
+    },
     callbacks: {
         async jwt({ token, account }: { token: JWT; account?: Account | null }) {
             // Type guard for SpotifyAccount
@@ -33,7 +40,8 @@ const authOptions = {
                 token.expiresAt = Date.now() + spotifyAccount.expires_in * 1000;
             }
 
-            if (Date.now() > (token.expiresAt as number)) {
+            // Refresh token if expired
+            if (token.expiresAt && Date.now() > (token.expiresAt as number)) {
                 try {
                     const res = await fetch("https://accounts.spotify.com/api/token", {
                         method: "POST",
@@ -68,6 +76,6 @@ const authOptions = {
     },
 }
 
-// @ts-expect-error//next-auth types are wrong
+
 const handler = NextAuth(authOptions)
 export { handler as GET, handler as POST }
